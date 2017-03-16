@@ -1,0 +1,27 @@
+function [A,Lambda]=PowerIter(psK,psM,K,M,Pow,Comul,Vol,Tol)
+num=size(psK,1);
+
+Mat=psK\psM;
+
+A=ones(num,1);
+
+Res=1.+Tol;
+Change=1.0+Tol;
+
+while(Res>Tol || Change>Tol)
+    oldA=A;
+
+    A=Mat*A;
+
+    [val,ind]=max(abs(A));
+    A=(abs(A/A(ind))).^(1/Pow);
+    obVol=Comul'*A;
+    A=(Vol/obVol)*A;
+
+    Lambda=A'*(A.^Pow)/(A'*Mat*A);
+
+    Res=norm(K*(A.^Pow)*(1/Lambda)-M*A,2);
+    Change=norm(oldA-A);
+end
+
+end
